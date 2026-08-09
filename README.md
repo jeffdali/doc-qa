@@ -90,13 +90,23 @@ export NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1
 
 ### 5. Run both servers
 
-**Option A — one command (recommended):**
+#### Option A — `dev.sh` (recommended, macOS)
+
+> [!NOTE]
+> `dev.sh` is a bash script tested on **macOS**. It starts both servers in the background and shuts them both down cleanly with a single `Ctrl+C`.
+
 ```bash
 # From the repo root:
 bash dev.sh
 ```
 
-**Option B — separate terminals:**
+What it does:
+- Runs `uv sync` and starts the **FastAPI backend** on `http://localhost:8001`
+- Waits 2 seconds, then starts the **Next.js frontend** on `http://localhost:3001`
+- Registers a `Ctrl+C` trap to gracefully terminate both processes together
+
+#### Option B — separate terminals
+
 ```bash
 # Terminal 1 — backend
 cd doc-qa-api && make dev          # http://localhost:8001
