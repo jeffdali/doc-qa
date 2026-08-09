@@ -1,0 +1,56 @@
+# ──────────────────────────────────────────────
+# Python (doc-qa-api)
+# ──────────────────────────────────────────────
+__pycache__/
+*.py[oc]
+*.egg-info/
+build/
+dist/
+wheels/
+.venv/
+
+# Secrets
+.env
+
+# Uploaded user document data & vector store
+doc-qa-api/data/chroma/
+doc-qa-api/data/raw/
+doc-qa-api/data/*.pdf
+doc-qa-api/data/*.txt
+doc-qa-api/data/*.docx
+doc-qa-api/data/*.md
+
+# Scratch / reference files
+doc-qa-api/rag_api_guide.pdf
+
+# Test & lint caches
+.pytest_cache/
+.ruff_cache/
+
+# ──────────────────────────────────────────────
+# Node.js (doc-qa-frontend)
+# ──────────────────────────────────────────────
+node_modules/
+.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ──────────────────────────────────────────────
+# General
+# ──────────────────────────────────────────────
+.DS_Store
+*.pem
+.vercel

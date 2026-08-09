@@ -1,0 +1,36 @@
+[project]
+name = "doc-qa-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiofiles>=25.1.0",
+    "alembic>=1.18.5",
+    "asyncpg>=0.31.0",
+    "bcrypt>=5.0.0",
+    "chonkie[semantic]>=1.7.0",
+    "chromadb>=1.5.9",
+    "fastapi>=0.138.1",
+    "httpx>=0.28.1",
+    "llama-index>=0.14.23",
+    "llama-index-vector-stores-chroma>=0.5.5",
+    "passlib[bcrypt]>=1.7.4",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.2",
+    "pypdf>=6.14.2",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "python-dotenv>=1.2.2",
+    "python-jose[cryptography]>=3.5.0",
+    "python-multipart>=0.0.32",
+    "ragas>=0.4.3",
+    "sentence-transformers>=5.6.0",
+    "sqlalchemy>=2.0.51",
+    "uvicorn[standard]>=0.49.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.20",
+]
