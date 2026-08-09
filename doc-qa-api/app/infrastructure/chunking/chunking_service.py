@@ -1,7 +1,7 @@
 from app.domain.schemas import ChunkingStrategy
 from app.domain.models import Chunk
 import logging
-from chonkie import TokenChunker, RecursiveChunker, SemanticChunker, RecursiveRules
+from chonkie import TokenChunker, RecursiveChunker, SemanticChunker, RecursiveRules, OverlapRefinery
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,13 @@ class ChunkingService:
     ) -> list[str]:
         chunker = RecursiveChunker(chunk_size=chunk_size, rules=RecursiveRules())
 
-        return chunker.chunk(text)
+        raw_chunks = chunker.chunk(text)
+        
+        if chunk_overlap>0:
+            refinery = OverlapRefinery(context_size=chunk_overlap)
+            raw_chunks = refinery.refine(raw_chunks)
+
+        return raw_chunks
 
     def _semantic_chunks(
         self, text: str, chunk_size: int, chunk_overlap: int
