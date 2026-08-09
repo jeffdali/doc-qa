@@ -1,5 +1,4 @@
 from app.core.config import get_settings
-from app.repositories.protocols import LLMProvider
 import logging
 import httpx
 from typing import AsyncGenerator

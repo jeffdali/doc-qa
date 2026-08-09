@@ -4,7 +4,6 @@ from app.core.config import Settings
 from app.repositories.protocols import EmbeddingProvider, VectorStoreRepository
 from app.infrastructure.parsing.document_parser import DocumentParser
 from app.infrastructure.chunking.chunking_service import ChunkingService
-from app.domain.models import Chunk
 from app.domain.schemas import ChunkingStrategy, IngestResponse
 
 

@@ -71,7 +71,7 @@ async def delete_document(
     # Delete from Vector Store
     try:
         vector_store.delete_document(document_id)
-    except Exception as e:
+    except Exception:
         # Log or ignore if already missing from chroma
         pass
 

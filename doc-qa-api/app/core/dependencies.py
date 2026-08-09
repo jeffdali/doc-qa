@@ -2,7 +2,6 @@ from typing import Annotated
 from fastapi import Request, Depends
 from app.repositories.protocols import EmbeddingProvider, VectorStoreRepository, LLMProvider
 from app.services.rag_service import RAGService
-from app.core.config import Settings, get_settings
 
 
 def get_embedding_service(request: Request) -> EmbeddingProvider:
@@ -16,18 +15,9 @@ def get_llm_client(request: Request) -> LLMProvider:
     return request.app.state.llm_client    
 
 
-def get_rag_service(
-    embedding_provider: Annotated[EmbeddingProvider, Depends(get_embedding_service)],
-    vector_store: Annotated[VectorStoreRepository, Depends(get_vector_store)],
-    llm_provider: Annotated[LLMProvider, Depends(get_llm_client)],
-    settings: Annotated[Settings, Depends(get_settings)],
-) -> RAGService:
-    return RAGService(
-        embedding_provider=embedding_provider,
-        vector_store=vector_store,
-        llm_provider=llm_provider,
-        settings=settings,
-    )
+def get_rag_service(request: Request) -> RAGService:
+    return request.app.state.rag_service
+     
 
 
 

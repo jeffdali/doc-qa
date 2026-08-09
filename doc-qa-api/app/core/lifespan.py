@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from app.core.config import get_settings
 
 from app.infrastructure.llm.ollama_client import make_llm_client
+from app.services.rag_service import RAGService
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     logger.info("Initialising LLM client...")
     app.state.llm_client = make_llm_client()
+    
+    logger.info("Initialising rag service...")
+    app.state.rag_service = RAGService(
+        embedding_provider=app.state.embedding_service,
+        vector_store=app.state.vector_store,
+        llm_provider=app.state.llm_client,
+        settings=settings,
+    )
+    
     
     # if the ollama client is not ready, log a warning
     if not await app.state.llm_client.health_check():
