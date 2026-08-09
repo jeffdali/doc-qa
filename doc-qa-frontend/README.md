@@ -8,11 +8,10 @@ The Next.js frontend for the **doc-qa** document Q&A platform. Provides the full
 
 ## Features
 
-- 🔐 **Auth flows** — Login & Sign Up pages
-- 📂 **Dashboard** — document library with upload, preview, and delete
-- 📤 **Upload** — drag-and-drop document ingestion with chunking strategy selector
-- 💬 **Chat** — real-time streaming Q&A interface per document
-- 📱 **Responsive** — works on desktop and mobile
+- 🔐 **Auth flows** — Login & Sign Up pages with JWT stored in localStorage
+- 📂 **Dashboard** — document library with upload and delete
+- 📤 **Upload** — document ingestion with chunking strategy selector
+- 💬 **Chat** — real-time streaming Q&A interface per document (SSE)
 
 ---
 
@@ -20,11 +19,14 @@ The Next.js frontend for the **doc-qa** document Q&A platform. Provides the full
 
 | | |
 |---|---|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| State / Data | React Query / fetch |
-| Auth | JWT stored in cookies |
+| Framework | Next.js 16.2.12 (App Router) |
+| Language | TypeScript 5 |
+| Runtime | React 19 |
+| Styling | Tailwind CSS 4 |
+| UI Primitives | Radix UI (Dialog, DropdownMenu, Label, Slot, Tooltip) |
+| Icons | Lucide React |
+| API | Native `fetch` with a custom typed `apiClient` |
+| Auth | JWT stored in `localStorage` |
 
 ---
 
@@ -36,17 +38,15 @@ The Next.js frontend for the **doc-qa** document Q&A platform. Provides the full
 npm install
 ```
 
-### 2. Configure environment
+### 2. Configure the API URL
+
+The frontend reads the backend URL from an environment variable:
 
 ```bash
-cp .env.example .env.local
+NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1
 ```
 
-Set the backend URL:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8001
-```
+The default fallback in the code is `http://localhost:8001/api/v1`.
 
 ### 3. Start the dev server
 
@@ -54,16 +54,16 @@ NEXT_PUBLIC_API_URL=http://localhost:8001
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3001](http://localhost:3001).
 
 ---
 
 ## Available Scripts
 
 ```bash
-npm run dev      # Start development server (hot reload)
+npm run dev      # Start development server on port 3001 (hot reload)
 npm run build    # Build production bundle
-npm run start    # Start production server
+npm run start    # Start production server on port 3001
 npm run lint     # Run ESLint
 ```
 
@@ -73,14 +73,21 @@ npm run lint     # Run ESLint
 
 ```
 src/
-├── app/                # Next.js App Router pages
-│   ├── login/          # Login page
-│   ├── signup/         # Sign up page
-│   ├── dashboard/      # Document library
-│   ├── upload/         # Document upload
-│   └── chat/           # Chat interface
-├── components/         # Shared UI components
-├── features/           # Feature-scoped logic & components
-├── lib/                # API client, utilities
-└── shared/             # Types, constants, hooks
+├── app/                    # Next.js App Router pages
+│   ├── page.tsx            # Root / landing page
+│   ├── login/              # Login page
+│   ├── signup/             # Sign up page
+│   ├── dashboard/          # Document library
+│   ├── upload/             # Document upload
+│   └── chat/[documentId]/  # Chat interface (dynamic route)
+├── components/
+│   ├── layout/             # AppLayout, Navbar, Sidebar
+│   └── ui/                 # Reusable UI components (Button, Card, Dialog, Input, Badge)
+├── features/
+│   ├── chat/               # useSSEStream hook for streaming
+│   └── documents/          # UploadModal component
+├── lib/                    # Utilities (cn helper)
+└── shared/
+    ├── api/                # apiClient, fetch wrapper, TypeScript types
+    └── context/            # AuthContext (React context for user session)
 ```

@@ -6,7 +6,7 @@ Upload your documents and have natural conversations with them — no cloud AI r
 ```
 ┌─────────────────────────┐        ┌──────────────────────────────┐
 │   doc-qa-frontend       │  HTTP  │   doc-qa-api                 │
-│   Next.js 15 App Router │◄──────►│   FastAPI + RAG pipeline     │
+│   Next.js 16 App Router │◄──────►│   FastAPI + RAG pipeline     │
 │   TypeScript + Tailwind │        │   Ollama · ChromaDB · PG     │
 └─────────────────────────┘        └──────────────────────────────┘
                                               │
@@ -24,7 +24,7 @@ Upload your documents and have natural conversations with them — no cloud AI r
 - 📄 **Upload documents** — PDF, TXT, Markdown
 - 🔍 **Semantic search** — Sentence-Transformer embeddings + ChromaDB vector store
 - 🤖 **Local LLM answers** — powered by [Ollama](https://ollama.ai), no API keys needed
-- 🌊 **Streaming responses** — real-time token-by-token output
+- 🌊 **Streaming responses** — real-time token-by-token output via SSE
 - 🔐 **Multi-user auth** — JWT-based accounts with document ownership
 - 💬 **Chat history** — persistent per-document conversation history
 
@@ -79,8 +79,13 @@ uv run alembic upgrade head
 
 ```bash
 cd ../doc-qa-frontend
-cp .env.example .env.local   # set NEXT_PUBLIC_API_URL=http://localhost:8001
 npm install
+```
+
+Set the backend URL via an environment variable before running:
+
+```bash
+export NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1
 ```
 
 ### 5. Run both servers
@@ -94,13 +99,13 @@ bash dev.sh
 **Option B — separate terminals:**
 ```bash
 # Terminal 1 — backend
-cd doc-qa-api && make dev         # http://localhost:8001
+cd doc-qa-api && make dev          # http://localhost:8001
 
 # Terminal 2 — frontend
-cd doc-qa-frontend && npm run dev  # http://localhost:3000
+cd doc-qa-frontend && npm run dev  # http://localhost:3001
 ```
 
-Open **http://localhost:3000** in your browser.
+Open **http://localhost:3001** in your browser.
 
 ---
 
@@ -108,13 +113,15 @@ Open **http://localhost:3000** in your browser.
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | Next.js 15 (App Router), TypeScript, Tailwind CSS |
-| **Backend** | FastAPI, Python 3.12, uv |
+| **Frontend** | Next.js 16.2.12, React 19, TypeScript 5, Tailwind CSS 4, Radix UI |
+| **Backend** | FastAPI, Python 3.12+, uv |
 | **LLM** | Ollama (local — any model) |
-| **Embeddings** | Sentence-Transformers (`BAAI/bge-base-en-v1.5` recommended) |
+| **Embeddings** | Sentence-Transformers |
 | **Vector Store** | ChromaDB (persistent) |
-| **Database** | PostgreSQL (async SQLAlchemy + Alembic) |
-| **Auth** | JWT (access tokens) |
+| **Database** | PostgreSQL (async SQLAlchemy + Alembic, asyncpg driver) |
+| **Auth** | JWT via python-jose |
+| **Chunking** | Chonkie (fixed, recursive, semantic strategies) |
+| **PDF parsing** | pypdf |
 
 ---
 
