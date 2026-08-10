@@ -47,6 +47,7 @@ class Settings(BaseSettings):
 
     # retrieval
     top_k: int = Field(ge=1, le=50)
+    max_context_tokens: int = Field(default=6000, description="Max tokens for RAG context window")
 
     @property
     def is_production(self) -> bool:

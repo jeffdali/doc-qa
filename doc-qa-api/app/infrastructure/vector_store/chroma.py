@@ -1,10 +1,11 @@
 from app.core.config import get_settings
-from PIL.Image import logger
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 from app.domain.models import Chunk, SearchResult
 import uuid
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ChromaVectorStore:
     def __init__(self, persist_dir: str, collection_name: str) -> None:
@@ -81,14 +82,15 @@ class ChromaVectorStore:
         if not results or not results.get("documents") or not results["documents"][0]:
             return []
 
-        for text, metadata, distance in zip(
+        for chunk_id, text, metadata, distance in zip(
+            results["ids"][0],
             results["documents"][0],
             results["metadatas"][0],
             results["distances"][0],
         ):
-            similarity = 1 - (distance / 2)
+            similarity = 1 - distance
             chunk = Chunk(
-                id=str(uuid.uuid4()),
+                id=chunk_id,
                 text=text,
                 metadata=metadata or {},
             )

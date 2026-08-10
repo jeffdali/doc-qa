@@ -54,7 +54,7 @@ class RAGService:
             default_top_k=settings.top_k,
         )
         self._prompt_builder = PromptBuilder(
-            max_context_tokens=3000,
+            max_context_tokens=settings.max_context_tokens,
         )
         
     
