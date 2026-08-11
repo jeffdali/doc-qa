@@ -12,7 +12,7 @@ Upload your documents, ask questions in natural language, and get grounded answe
 
 - 📄 **Document ingestion** — PDF, TXT, Markdown
 - ✂️ **Flexible chunking** — Fixed, Recursive (default), or Semantic strategies
-- 🔍 **Semantic retrieval** — Sentence-Transformer embeddings + ChromaDB vector store
+- 🔍 **2-Stage Retrieval** — Fast Bi-Encoder vector search + Cross-Encoder Re-ranking (`BAAI/bge-reranker-v2-m3`)
 - 🤖 **Local LLM inference** — Ollama (gemma4, llama3, mistral, etc.)
 - 🌊 **Streaming responses** — Token-by-token via Server-Sent Events
 - 🔐 **JWT authentication** — User accounts with document ownership
@@ -27,7 +27,8 @@ Upload your documents, ask questions in natural language, and get grounded answe
 |---|---|
 | Framework | FastAPI + Uvicorn |
 | LLM | Ollama (local, any model) |
-| Embeddings | Sentence-Transformers (`BAAI/bge-base-en-v1.5` recommended) |
+| Embeddings | Sentence-Transformers (`BAAI/bge-m3`) |
+| Re-ranking | Cross-Encoder (`BAAI/bge-reranker-v2-m3`) |
 | Vector Store | ChromaDB (persistent) |
 | Database | PostgreSQL (async via asyncpg) |
 | Auth | JWT (PyJWT) |
@@ -67,7 +68,8 @@ Edit `.env` and fill in your values — at minimum:
 DATABASE_URL=postgresql+asyncpg://<user>:<password>@localhost:5432/docqa
 JWT_SECRET_KEY=<generate a long random string>
 OLLAMA_MODEL=gemma4        # or any model you have pulled
-EMBEDDING_MODEL=BAAI/bge-base-en-v1.5
+EMBEDDING_MODEL=BAAI/bge-m3
+RERANKER_MODEL=BAAI/bge-reranker-v2-m3
 ```
 
 ### 3. Run database migrations

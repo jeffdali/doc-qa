@@ -22,7 +22,7 @@ Upload your documents and have natural conversations with them — no cloud AI r
 ## What It Does
 
 - 📄 **Upload documents** — PDF, TXT, Markdown
-- 🔍 **Semantic search** — Sentence-Transformer embeddings + ChromaDB vector store
+- 🔍 **2-Stage Retrieval** — BGE-M3 Embeddings (ChromaDB) + Cross-Encoder Re-ranking
 - 🤖 **Local LLM answers** — powered by [Ollama](https://ollama.ai), no API keys needed
 - 🌊 **Streaming responses** — real-time token-by-token output via SSE
 - 🔐 **Multi-user auth** — JWT-based accounts with document ownership
@@ -126,7 +126,8 @@ Open **http://localhost:3001** in your browser.
 | **Frontend** | Next.js 16.2.12, React 19, TypeScript 5, Tailwind CSS 4, Radix UI |
 | **Backend** | FastAPI, Python 3.12+, uv |
 | **LLM** | Ollama (local — any model) |
-| **Embeddings** | Sentence-Transformers |
+| **Embeddings** | Sentence-Transformers (`BAAI/bge-m3`) |
+| **Re-ranking** | Cross-Encoder (`BAAI/bge-reranker-v2-m3`) |
 | **Vector Store** | ChromaDB (persistent) |
 | **Database** | PostgreSQL (async SQLAlchemy + Alembic, asyncpg driver) |
 | **Auth** | JWT via python-jose |
