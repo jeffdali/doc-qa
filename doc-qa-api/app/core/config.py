@@ -50,6 +50,11 @@ class Settings(BaseSettings):
     top_k: int = Field(ge=1, le=50)
     max_context_tokens: int = Field(default=6000, description="Max tokens for RAG context window")
 
+    # reranker
+    reranker_model: str = Field(default="BAAI/bge-reranker-v2-m3")
+    reranker_device: str = Field(default="cpu", description="cpu | cuda | mps")
+    reranker_enabled: bool = Field(default=True)
+    
     @property
     def is_production(self) -> bool:
         return self.app_env == "production"

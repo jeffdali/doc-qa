@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 from app.infrastructure.vector_store.chroma import make_vector_store
 from app.infrastructure.embeddings.sentence_transformer import make_embedding_service
+from app.infrastructure.reranker.reranker import make_reranker
 from typing import AsyncGenerator
 from fastapi import FastAPI
 from app.core.config import get_settings
@@ -32,12 +33,20 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     logger.info("Initialising LLM client...")
     app.state.llm_client = make_llm_client()
-    
+
+    if settings.reranker_enabled:
+        logger.info("Initialising reranker...")
+        app.state.reranker = make_reranker()
+    else:
+        logger.info("Reranker disabled, setting to None")
+        app.state.reranker = None
+           
     logger.info("Initialising rag service...")
     app.state.rag_service = RAGService(
         embedding_provider=app.state.embedding_service,
         vector_store=app.state.vector_store,
         llm_provider=app.state.llm_client,
+        reranker=app.state.reranker,
         settings=settings,
     )
     

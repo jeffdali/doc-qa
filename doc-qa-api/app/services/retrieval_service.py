@@ -9,10 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 class RetrievalService:
-    def __init__(self, embedding_provider: EmbeddingProvider, vector_store:VectorStoreRepository, default_top_k:int=5):
+    def __init__(self, embedding_provider: EmbeddingProvider, vector_store:VectorStoreRepository, reranker = None, default_top_k:int=5):
         self._embedder = embedding_provider
         self._store = vector_store
         self._default_top_k = default_top_k
+        self._reranker = reranker
         
     
     def retrieve(self, request: QueryRequest) -> RetrievalResult:
@@ -49,8 +50,11 @@ class RetrievalService:
                 request.min_score,
                 request.question[:80],
             )
-
-        ranked = self._rank(filtered)
+        
+        if self._reranker is not None and filtered:
+            ranked = self._reranker.rerank(query=request.question, results=filtered, top_k=top_k,)
+        else:
+            ranked = self._rank(filtered)
         truncated = ranked[:top_k]
         
         return RetrievalResult(

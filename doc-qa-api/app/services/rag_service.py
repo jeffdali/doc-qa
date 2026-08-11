@@ -1,3 +1,4 @@
+from app.repositories.protocols import RerankerProvider
 import glob
 import logging
 import os
@@ -44,6 +45,7 @@ class RAGService:
         embedding_provider: EmbeddingProvider,
         vector_store: VectorStoreRepository,
         llm_provider: LLMProvider,
+        reranker: RerankerProvider,
         settings: Settings,
     ) -> None:
         self._llm = llm_provider
@@ -52,6 +54,7 @@ class RAGService:
             embedding_provider=embedding_provider,
             vector_store=vector_store,
             default_top_k=settings.top_k,
+            reranker=reranker,
         )
         self._prompt_builder = PromptBuilder(
             max_context_tokens=settings.max_context_tokens,
