@@ -2,6 +2,7 @@ import pathlib
 import logging
 from pypdf import PdfReader
 from io import BytesIO
+import unicodedata 
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,11 @@ class DocumentParser:
     """
 
     SUPPORTED_TYPES = {".pdf", ".txt", ".md"}
+    
+    def _normalize(self, text:str) -> str :
+        if not text:
+            return ""
+        return unicodedata.normalize("NFC", text).strip()
 
     def parse(self, content: bytes, filename: str) -> str:
 
@@ -36,9 +42,15 @@ class DocumentParser:
         return text.strip()
 
     def parse_text(self, content: bytes) -> str:
-        return content.decode("utf-8", errors="replace")
+        decoded_text = content.decode("utf-8", errors="replace")
+        return self._normalize(decoded_text)
 
     def parse_pdf(self, content: bytes) -> str:
         reader = PdfReader(BytesIO(content))
-        pages = [page.extract_text() or "" for page in reader.pages]
+        pages = []
+        for page in reader.pages:
+            raw_text = page.extract_text() or ""
+            pages.append(self._normalize(raw_text))
+        
         return "\n\n".join(pages)
+    

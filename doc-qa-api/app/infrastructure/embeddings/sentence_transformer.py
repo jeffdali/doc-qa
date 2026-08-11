@@ -6,15 +6,17 @@ logger = logging.getLogger(__name__)
 
 
 class SentenceTransformerEmbeddings:
-    def __init__(self, model_name: str, device: str = "cpu") -> None:
+    def __init__(self, model_name: str, device: str = "cpu", batch_size:int=16) -> None:
         self._model: SentenceTransformer | None = None
         self._model_name = model_name
         self._device = device
+        self._batch_size = batch_size
         logger.info(
             "EmbeddingService initialised",
             extra={
                 "model": model_name,
                 "device": device,
+                "batch_size": batch_size,
             },
         )
 
@@ -34,7 +36,7 @@ class SentenceTransformerEmbeddings:
     def embed_batch(self, texts: list[str]) -> list[list[float]]:
         model = self._get_model()
         vectors = model.encode(
-            texts, normalize_embeddings=True, batch_size=32, show_progress_bar=False
+            texts, normalize_embeddings=True, batch_size=self._batch_size, show_progress_bar=False
         )
         return [v.tolist() for v in vectors]
 
@@ -49,5 +51,7 @@ def make_embedding_service() -> SentenceTransformerEmbeddings:
     """
     settings = get_settings()
     return SentenceTransformerEmbeddings(
-        model_name=settings.embedding_model, device=settings.embedding_device
+        model_name=settings.embedding_model, 
+        device=settings.embedding_device,
+        batch_size= settings.embedding_batch_size
     )

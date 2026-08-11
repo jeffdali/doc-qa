@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     # embedding
     embedding_model: str
     embedding_device: str = Field(description="cpu | cuda | mps")
+    embedding_batch_size: int = Field(default=16, ge=1, le=64)
 
     # chunking
     chunk_size: int = Field(ge=64, le=4096)
