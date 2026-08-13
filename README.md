@@ -26,8 +26,8 @@ Upload your documents and have natural conversations with them — no cloud AI r
 - 🤖 **Local LLM answers** — powered by [Ollama](https://ollama.ai), no API keys needed
 - 🌊 **Streaming responses** — real-time token-by-token output via SSE
 - 🔐 **Multi-user auth** — JWT-based accounts with document ownership
-- 💬 **Chat history** — persistent per-document conversation history
-
+- 💬 **Conversational RAG** — Context-aware follow-up questions
+- 🔐 **Zero-Trust Security** — Chat history is injected server-side directly from PostgreSQL
 ---
 
 ## Repository Structure

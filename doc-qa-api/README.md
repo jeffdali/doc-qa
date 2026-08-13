@@ -5,7 +5,6 @@
 A production-ready **Retrieval-Augmented Generation (RAG)** REST API for document Q&A.  
 Upload your documents, ask questions in natural language, and get grounded answers powered by a **local LLM via Ollama** and semantic search via **ChromaDB**.
 
-
 ---
 
 ## Features
@@ -16,23 +15,24 @@ Upload your documents, ask questions in natural language, and get grounded answe
 - 🤖 **Local LLM inference** — Ollama (gemma4, llama3, mistral, etc.)
 - 🌊 **Streaming responses** — Token-by-token via Server-Sent Events
 - 🔐 **JWT authentication** — User accounts with document ownership
-- 💬 **Chat history** — Persistent per-document conversation history
+- 💬 **Conversational RAG** — LLM-driven query condensation for follow-up questions
+- 🔐 **Zero-Trust Chat History** — Secure server-side history injection directly from DB
 - 🗃️ **PostgreSQL** — Async SQLAlchemy with Alembic migrations
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | FastAPI + Uvicorn |
-| LLM | Ollama (local, any model) |
-| Embeddings | Sentence-Transformers (`BAAI/bge-m3`) |
-| Re-ranking | Cross-Encoder (`BAAI/bge-reranker-v2-m3`) |
-| Vector Store | ChromaDB (persistent) |
-| Database | PostgreSQL (async via asyncpg) |
-| Auth | JWT (PyJWT) |
-| Package manager | [uv](https://github.com/astral-sh/uv) |
+| Layer           | Technology                                |
+| --------------- | ----------------------------------------- |
+| Framework       | FastAPI + Uvicorn                         |
+| LLM             | Ollama (local, any model)                 |
+| Embeddings      | Sentence-Transformers (`BAAI/bge-m3`)     |
+| Re-ranking      | Cross-Encoder (`BAAI/bge-reranker-v2-m3`) |
+| Vector Store    | ChromaDB (persistent)                     |
+| Database        | PostgreSQL (async via asyncpg)            |
+| Auth            | JWT (PyJWT)                               |
+| Package manager | [uv](https://github.com/astral-sh/uv)     |
 
 ---
 
@@ -93,17 +93,17 @@ Interactive docs: `http://localhost:8001/docs`
 
 ## API Overview
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/v1/auth/register` | Register a new user |
-| `POST` | `/api/v1/auth/login` | Login & get JWT token |
-| `POST` | `/api/v1/documents/upload` | Upload & ingest a document |
-| `GET` | `/api/v1/documents/` | List your documents |
-| `DELETE` | `/api/v1/documents/{id}` | Delete a document |
-| `POST` | `/api/v1/rag/query` | Ask a question (blocking) |
-| `POST` | `/api/v1/rag/stream` | Ask a question (streaming) |
-| `GET` | `/api/v1/chat/{doc_id}/messages` | Get chat history |
-| `DELETE` | `/api/v1/chat/{doc_id}/messages` | Clear chat history |
+| Method   | Endpoint                         | Description                |
+| -------- | -------------------------------- | -------------------------- |
+| `POST`   | `/api/v1/auth/register`          | Register a new user        |
+| `POST`   | `/api/v1/auth/login`             | Login & get JWT token      |
+| `POST`   | `/api/v1/documents/upload`       | Upload & ingest a document |
+| `GET`    | `/api/v1/documents/`             | List your documents        |
+| `DELETE` | `/api/v1/documents/{id}`         | Delete a document          |
+| `POST`   | `/api/v1/rag/query`              | Ask a question (blocking)  |
+| `POST`   | `/api/v1/rag/stream`             | Ask a question (streaming) |
+| `GET`    | `/api/v1/chat/{doc_id}/messages` | Get chat history           |
+| `DELETE` | `/api/v1/chat/{doc_id}/messages` | Clear chat history         |
 
 ---
 
