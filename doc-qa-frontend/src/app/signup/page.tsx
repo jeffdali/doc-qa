@@ -57,7 +57,7 @@ export default function SignupPage() {
               Create Account
             </CardTitle>
             <CardDescription className="text-text-secondary">
-              Join Antigravity DocQ&A to ingest and interrogate documents
+              Join DocQ&A to ingest and interrogate documents
             </CardDescription>
           </CardHeader>
 
@@ -146,7 +146,7 @@ export default function SignupPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <span>Create Intelligence Account</span>
+                    <span>Create Account</span>
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 )}

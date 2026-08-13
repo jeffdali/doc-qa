@@ -12,9 +12,9 @@ from app.domain.schemas import (
     RAGResponse,
     RAGStreamChunk,
 )
-from app.infrastructure.database.models import Document, User
 from app.infrastructure.database.session import get_db
-
+from app.infrastructure.database.models import Document, User, ChatMessage
+from app.domain.schemas import ChatTurn
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
@@ -42,6 +42,26 @@ async def enforce_query_ownership(
         user_doc_ids = res.scalars().all()
         request.document_ids = list(user_doc_ids)
 
+async def inject_chat_history(
+    request: QueryRequest, db: Annotated[AsyncSession, Depends(get_db)])-> None:
+    if not request.document_ids:
+        request.chat_history = []
+        return
+    
+    res = await db.execute(
+        select(ChatMessage)
+        .where(ChatMessage.document_id == request.document_ids[0])
+        .order_by(ChatMessage.created_at.desc())
+        .limit(6)
+    )
+    
+    db_messages = reversed(res.scalars().all())
+    
+    # Overwrite whatever the client sent with the real DB state
+    request.chat_history = [
+        ChatTurn(role=m.role, content=m.content) 
+        for m in db_messages
+    ]
 
 @router.post(
     "",
@@ -59,6 +79,7 @@ async def query(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> RAGResponse:
     await enforce_query_ownership(request, current_user, db)
+    await inject_chat_history(request, db)
     try:
         return await rag_service.answer(request)
     except RuntimeError as exc:
@@ -87,6 +108,7 @@ async def query_stream(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> StreamingResponse:
     await enforce_query_ownership(request, current_user, db)
+    await inject_chat_history(request, db)
 
     async def event_generator():
         try:

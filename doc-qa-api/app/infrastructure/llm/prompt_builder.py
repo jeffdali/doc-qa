@@ -3,7 +3,7 @@ import logging
 import os
 
 from app.domain.models import SearchResult
-from app.domain.schemas import PromptResult
+from app.domain.schemas import PromptResult, ChatTurn
 
 logger = logging.getLogger(__name__)
 
@@ -48,10 +48,16 @@ class PromptBuilder:
         self._max_context_chars = max_context_tokens * self.CHARS_PER_TOKEN
         
     
-    def build(self, question:str, results: list[SearchResult]) -> PromptResult:
-        budgeted = self._apply_token_budget(results)
+    def build(self, question:str, results: list[SearchResult], chat_history:list[ChatTurn] | None = None) -> PromptResult:
+        
+        history_block = self._format_history(chat_history)
+        history_token_cost = len(history_block) // self.CHARS_PER_TOKEN
+
+        available_for_chunks = self._max_context_chars - ( history_token_cost * self.CHARS_PER_TOKEN)
+        
+        budgeted = self._apply_token_budget(results, available_for_chunks)
         context_block = self._format_context(budgeted)
-        user_prompt = self._assemble_user_prompt(question, context_block)
+        user_prompt = self._assemble_user_prompt(question, context_block, history_block)
         
         estimated_tokens = len(user_prompt) // self.CHARS_PER_TOKEN
         
@@ -70,18 +76,29 @@ class PromptBuilder:
         )
         
     
-    def _apply_token_budget(self, results: list[SearchResult]) -> list[SearchResult]:
+    def _apply_token_budget(self, results: list[SearchResult], available_for_chunks:int) -> list[SearchResult]:
         selected: list[SearchResult] = []
         chars_used = 0
         for result in results:
             chunk_chars = len(result.chunk.text)
-            if chars_used + chunk_chars > self._max_context_chars:
+            if chars_used + chunk_chars > available_for_chunks:
                 break
             selected.append(result)
             chars_used += chunk_chars
         logger.debug("selected: %d chunks", len(selected))
         return selected
- 
+    
+    def _format_history(self, history:list[ChatTurn] | None )-> str:
+        if not history:
+            return ""
+        
+        history_lines = []
+        for turn in history:
+            line = f"{turn.role.upper()}: {turn.content}"
+            history_lines.append(line)
+        
+        history_text= "\n".join(history_lines)
+        return f"### CHAT HISTORY:\n{history_text}"
     
     def _format_context(self, results: list[SearchResult]) -> str:
         if not results:
@@ -110,12 +127,14 @@ class PromptBuilder:
         return "\n\n---\n\n".join(blocks)
     
     
-    def _assemble_user_prompt(self, question: str, context_block: str) -> str:
+    def _assemble_user_prompt(self, question: str, context_block: str, history_bblock:str="") -> str:
+        question_label = "CURRENT QUESTION:" if history_bblock else "QUESTION:"
         return (
             f"CONTEXT:\n"
             f"{context_block}\n\n"
             f"---\n\n"
-            f"QUESTION:\n"
+            f"{history_bblock}\n\n"
+            f"{question_label}\n"
             f"{question}\n\n"
             f"ANSWER:"
         )

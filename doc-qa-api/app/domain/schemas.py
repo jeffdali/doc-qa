@@ -1,3 +1,4 @@
+from typing import Literal
 from app.domain.models import SearchResult
 from enum import Enum
 from pydantic import BaseModel, Field
@@ -66,12 +67,22 @@ class PromptResult(BaseModel):
     estimated_tokens: int
     
 
+class ChatTurn(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=4000)
+
+
 class QueryRequest(BaseModel):
     question: str = Field(min_length=3, max_length=10000,description="The question to ask")
     top_k: int | None = Field(default=None,ge=1, le=100, description="The number of chunks to use")
     min_score: float  = Field(default=0.4, ge=0.0, le=1.0, description="The minimum score to use")
     document_ids : list[str] | None = Field(default=None, description="The ids of the documents to use")
     
+    chat_history:list[ChatTurn] | None = Field(
+        default=None,
+        max_length=10,
+        description="Last N conversation turns, oldest first."
+    )
 
 class RetrievalResult(BaseModel):
     result: list[SearchResult]
